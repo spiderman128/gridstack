@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/5.0.0/gridstack.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/css/bootstrap-colorpicker.css"/>
+	<style type="text/css">
+		body, div {
+			user-select: none;
+		}
+
+	  	.grid-stack { 
+	  		position: absolute;
+	  		background: transparent;
+	  	}
+	  	.grid-stack-item-content { 
+	  		background-color: #fff; 
+	  		border: 1px solid #000;
+	  		z-index: 0;
+	  	}
+
+	  	.grid-stack .grid-stack-item .grid-stack-item-content {
+    		overflow-x: auto!important;
+	  	}
+
+	  	.grid-stack-item-removing {
+		  	opacity: 0.5;
+		}
+
+		.ui-draggable-dragging, .ui-draggable-dragging .grid-stack-item-content {
+			z-index: 10!important;
+		}
+
+	  	table {
+	  		border-collapse: separate;
+	  		border-spacing: 0;
+	  		position: relative;
+	  		left: 120px;
+	  		top: 0;
+	  	}
+
+	  	table th {
+	  		border-top: 1px solid #fff;
+	  		border-bottom: 1px solid #fff;
+	  		border-right: 1px solid #fff;
+	  		color: #fff;
+	  		background: #000;
+	  		padding: 3px;
+	  		font-weight: 200;
+	  		text-align: center;
+	  	}
+
+	  	table td {
+	  		border-bottom: 1px dotted #000;
+	  		border-right: 1px dotted #000;
+	  	}
+
+	  	table th:first-child {
+	  		border-left: 1px solid #fff;
+	  	}
+	  	table td:first-child {
+	  		border-left: 1px dotted #000;
+	  	}
+
+	  	tr.hour th {
+	  		min-width: 30px!important;
+	  	}
+
+	  	thead {
+	  		position: sticky;
+	  		top: 0;
+	  		z-index: 2;
+	  	}
+
+	  	.col_1, .col_2, .col_3, .col_4, .col_5 {
+	  		position: sticky;
+	  		z-index: 1;
+	  		left: 0;
+	  	}
+
+	  	p.widget-header {
+	  		margin: 0;
+	  		padding: 2px;
+	  		color: #fff;
+	  		font-size: 12px;
+	  		white-space: nowrap;
+	  	}
+	  	
+	  	p.widget-content {
+	  		margin: 0;
+	  		padding: 2px;
+	  		font-size: 12px;
+	  	}
+
+	  	.widget-data1, .widget-data2, .widget-data3 {
+	  		white-space: nowrap;
+	  	}
+
+	  	.btn_left, .btn_add .grid-stack-item-content {
+	  		background: #000;
+	  		color: #fff;
+	  		width: 100px;
+	  		min-height: 80px;
+	  		margin-bottom: 5px;
+	  		font-size: 12px;
+	  		text-align: center;
+	  		cursor: pointer;
+	  		padding-top: 5px;
+	  	}
+
+	  	img {
+	  		width: 20%;
+	  		filter: brightness(0) invert(1);
+	  	}
+
+	  	.btns {
+	  		position: fixed;
+	  		left: 0;
+	  		top: 0;
+	  		padding: 10px;
+	  		height: 100vh;
+	  		background-color: #fff;
+	  		z-index: 5;
+	  	}
+
+	  	th.row_1 {
+	  		z-index: 5!important;
+	  	}
+	</style>
+	<link href="gridstack-extra.css" rel="stylesheet"/>
+</head>
+<body>
+	<div class="btns">
+		<div class="btn_add">
+			<div class="grid-stack-item" gs-w="3" gs-h="2">
+				<div class="grid-stack-item-content">
+					<img src="svg/plus-circle.svg"/>
+					<br/>
+					Drag me into the dashboard
+				</div>
+				</div>
+			</div>
+		<div class="btn_left btn_remove">
+			<img src="svg/trash.svg"/>
+			<br/>
+			<span>Drop here to remove widget</span></div>
+		<div class="btn_left btn_save" onClick="saveGrid()">
+			<img src="svg/save.svg"/>
+			<br/>
+			<span>Save Dashboard</span>
+			<a id="save" style="display: none;"></a>
+		</div>
+		<div class="btn_left btn_load" onClick="loadGrid()">
+			<img src="svg/upload.svg"/>
+			<br/>
+			<span>Load Dashboard</span>
+			<input type="file" id="load" style="display: none;"/>
+		</div>
+		<div class="btn_left btn_clear" onClick="clearGrid()">
+			<img src="svg/remove.svg"/>
+			<br/>
+			<span>Clear Dashboard</span>
+		</div>
+		<div class="btn_left btn_enable" onClick="enableMove()"><span>Enable add, remove, move and reszie widgets</span></div>
+		<div class="btn_left btn_disable" onClick="disableMove()"><span>Disable add, remove, move and resize widgets</span></div>
+	</div>
+	<table>
+		<thead>
+			<tr class='weekday'>
+				<th rowspan="2" class="col_1 row_1">X</th>
+				<th rowspan="2" colspan="2" class="col_2 row_1">XX</th>
+				<th rowspan="2" class="col_4 row_1">XXX</th>
+				<th rowspan="2" class="col_5 row_1">XXXX</th>
+			</tr>
+			<tr class="hour">
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div class="grid-stack"></div>
+	<div id="modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h6 class="modal-title">Change Widget</h6>
+				</div>
+				<div class="modal-body">
+					<label>Header: </label>
+					<input type="text" class="form-control form-control-sm input_header"/>
+					<label>Header Color: </label>
+					<input type="text" class="form-control form-control-sm input_header_color"/>
+					<label>Data1: </label>
+					<input type="text" class="form-control form-control-sm input_data1"/>
+					<label>Data2: </label>
+					<input type="text" class="form-control form-control-sm input_data2"/>
+					<label>Data3: </label>
+					<input type="text" class="form-control form-control-sm input_data3"/>
+					<input type="hidden" class="input_x"/>
+					<input type="hidden" class="input_y"/>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" id="save_change">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/5.0.0/gridstack-h5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.4.0/js/bootstrap-colorpicker.min.js"></script>
+	<script type="text/javascript">
+    	var grid;
+    	var template = '<p class="widget-header" style="background-color: #000">Widget Header</p>'
+    		+ '<p class="widget-content">'
+    		+ '<span class="widget-data1">Widget Data1</span><br>'
+    		+ '<span class="widget-data2">Widget Data2</span><br>'
+    		+ '<span class="widget-data3">Widget Data3</span></p>'
+
+    	function clearGrid() {
+    		grid.removeAll();
+		  	disableItems.forEach(item => {
+		  		grid.addWidget('<div class="grid-stack-item disable-item"><div class="grid-stack-item-content">' + item.content + '</div></div>', item)
+		  	})
+    	}
+
+    	function saveGrid() {
+    		var gridData = grid.save();
+
+			const blob = new Blob([JSON.stringify(gridData.filter(d => d.class != 'disable'))]);
+			$('#save').attr('href', URL.createObjectURL(blob));
+			$('#save').attr('download', 'grid.json');
+			$('#save').get(0).click();
+    	}
+
+    	function loadGrid() {
+    		$('#load').get(0).click();
+    	}
+
+    	function myClone(event) {
+      		return $('<div class="grid-stack-item-content">' + template + '</div>')[0];
+    	}
+
+		function enableMove() {
+			grid.opts.acceptWidgets = function(el) { return true; };
+			
+			grid.opts.disableDrag = false;
+
+			grid.movable('.grid-stack-item', true);
+			grid.movable('.disable-item', false);
+
+			grid.opts.disableResize = false;
+
+			grid.resizable('.grid-stack-item', true);
+			grid.resizable('.disable-item', false);
+
+		}
+
+		function disableMove() {
+			grid.opts.acceptWidgets = function(el) { return false; };
+
+			grid.opts.disableDrag = true;
+			grid.movable('.grid-stack-item', false);
+
+			grid.opts.disableResize = true;
+			grid.resizable('.grid-stack-item', false);
+		}
+
+		var headerData = [
+			{ 
+				X: 11,
+				XX: [
+					{ XX1: 1, XX2: 'X', XXX: 100, XXXX: 201 },
+					{ XX1: 2, XX2: 'X', XXX: 101, XXXX: 202 },
+					{ XX1: 3, XX2: 'X', XXX: 102, XXXX: 203 },
+					{ XX1: 4, XX2: 'X', XXX: 103, XXXX: 204, disable: true },
+					{ XX1: 5, XX2: 'X', XXX: 104, XXXX: 205, disable: true },
+					{ XX1: 7, XX2: 'X', XXX: 106, XXXX: 207 }
+				]
+			},
+			{
+				X: 12,
+				XX: [
+					{ XX1: 1, XX2: 'X', XXX: 100, XXXX: 201 },
+					{ XX1: 2, XX2: 'X', XXX: 101, XXXX: 202 },
+					{ XX1: 3, XX2: 'X', XXX: 102, XXXX: 203 },
+					{ XX1: 14, XX2: 'X', XXX: 103, XXXX: 204 },
+					{ XX1: 5, XX2: 'X', XXX: 104, XXXX: 205 },
+					{ XX1: 6, XX2: 'X', XXX: 105, XXXX: 206, disable: true },
+					{ XX1: 7, XX2: 'X', XXX: 106, XXXX: 207, disable: true }
+				]
+			},
+			{
+				X: 12,
+				XX: [
+					{ XX1: 1, XX2: 'X', XXX: 100, XXXX: 201, disable: true },
+					{ XX1: 2, XX2: 'X', XXX: 101, XXXX: 202 },
+					{ XX1: 3, XX2: 'X', XXX: 102, XXXX: 203 },
+					{ XX1: 14, XX2: 'X', XXX: 103, XXXX: 204 },
+					{ XX1: 5, XX2: 'X', XXX: 104, XXXX: 205 },
+					{ XX1: 6, XX2: 'X', XXX: 105, XXXX: 206 },
+					{ XX1: 7, XX2: 'X', XXX: 106, XXXX: 207 }
+				]
+			},
+			{
+				X: 12,
+				XX: [
+					{ XX1: 1, XX2: 'X', XXX: 100, XXXX: 201 },
+					{ XX1: 2, XX2: 'X', XXX: 101, XXXX: 202 },
+					{ XX1: 3, XX2: 'X', XXX: 102, XXXX: 203 },
+					{ XX1: 14, XX2: 'X', XXX: 103, XXXX: 204 },
+					{ XX1: 5, XX2: 'X', XXX: 104, XXXX: 205 },
+					{ XX1: 6, XX2: 'X', XXX: 105, XXXX: 206 },
+					{ XX1: 7, XX2: 'X', XXX: 106, XXXX: 207 }
+				]
+			}
+		];
+
+		var disableItems = [];
+
+		var weekday = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+		var row = 0;
+		var column = weekday.length * 24;
+
+		var cellWidth,cellHeight;
+		
+		$(function(){
+			weekday.forEach(wd => {
+			  	$('tr.weekday').append('<th colspan="24">' + wd + '</th>');
+			  	for (var i = 0; i < 24; i++) {
+			  		$('tr.hour').append('<th>' + ((i + '').length == 1 ? '0' + i : i ) + '</th>');
+			  	}
+			});
+
+			var start = 0;
+			var cnt = 0;
+
+			for (var i = 0; i < headerData.length; i++) {
+				var d = headerData[i];
+
+				for (var j = 0; j < d.XX.length; j++) {
+					if (d.XX[j].disable) {
+						if (cnt == 0) start = row + j;
+						cnt++;
+					}
+					else {
+						if (cnt > 0) {
+							disableItems.push({ x: 0, y: start, h: cnt, w: column, content: '<p class="widget-content">Not Available(Could not be moved or resized)</p>', locked: true, noMove: true, noResize: true, class:'disable' })
+						}
+						start = -1;
+						cnt = 0;
+					}
+
+					var html = j == 0 ? '<th class="col_1" rowspan="' + d.XX.length + '">' + d.X + '</th>' : '';
+
+					html += '<th class="col_2">' + d.XX[j].XX1 + '</th>';
+					html += '<th class="col_3">' + d.XX[j].XX2 + '</th>';
+					html += '<th class="col_4">' + d.XX[j].XXX + '</th>';
+					html += '<th class="col_5">' + d.XX[j].XXXX + '</th>';
+
+					for (var k = 0; k < weekday.length * 24; k++) {
+						html += '<td></td>';
+					}
+
+					$('tbody').append('<tr>' +  html + '</tr>');
+				}
+
+				row += d.XX.length;
+			}
+
+			var style = '.col_1 { left: ' + $("tbody tr:nth-child(1)").offset().left + 'px!important } ' 
+				+ '.col_2 { left: ' + $("tbody tr:nth-child(1) th:nth-child(2)").offset().left + 'px!important} ' 
+				+ '.col_3 { left: ' + $("tbody tr:nth-child(1) th:nth-child(3)").offset().left + 'px!important} '
+				+ '.col_4 { left: ' + $("tbody tr:nth-child(1) th:nth-child(4)").offset().left + 'px!important} '
+				+ '.col_5 { left: ' + $("tbody tr:nth-child(1) th:nth-child(5)").offset().left + 'px!important} '
+
+			$('body').append('<style>' + style + '</style>');
+
+			cellWidth = $('tr.hour th').outerWidth();
+		  	cellHeight = $('tbody tr:nth-child(1) td').outerHeight();
+
+			var position = $("tbody tr:nth-child(1) td").first().position();
+
+			$('.grid-stack').css('left', (position.left + 120) + 'px');
+			$('.grid-stack').css('top', position.top + 'px');
+			$('.grid-stack').css('width', (cellWidth * column) + 'px');
+			$('.grid-stack').css('height', (cellHeight * row) + 'px');
+			
+		  	grid = GridStack.init({
+		  		float: true,
+		  		row,
+		  		column,
+		  		cellHeight,
+		  		margin: 0,
+		  		removable: '.btn_remove',
+		  		acceptWidgets: function(el) { return true; }
+		  	});
+
+
+		  	disableItems.forEach(item => {
+		  		grid.addWidget('<div class="grid-stack-item disable-item"><div class="grid-stack-item-content">' + item.content + '</div></div>', item)
+		  	})
+
+
+		  	GridStack.setupDragIn('.btn_add .grid-stack-item', { revert: 'invalid', scroll: false, appendTo: 'body', helper: myClone });
+
+			grid.on('dropped', function(event, previousWidget, newWidget) {
+    			if (newWidget) {
+    				var item = $('.grid-stack .grid-stack-item[gs-x="' + newWidget.x + '"][gs-y="' + newWidget.y + '"]');
+    				$('.grid-stack-item-content', item).html(template);
+    				$('.widget-header', item).css('height', cellHeight + 'px');
+    				
+    				var hasScroll = $('.grid-stack-item-content', item)[0].scrollWidth > $('.grid-stack-item-content', item)[0].clientWidth;
+    				$('.widget-header', item).css('display', hasScroll ? 'table' : 'block');
+
+    				grid.update('.grid-stack-item', { locked: true })
+				}
+  			});
+
+  			grid.on('added', function(event, items) {
+			  	items.forEach(function(item) {
+
+			  		var item = $('.grid-stack .grid-stack-item[gs-x="' + item.x + '"][gs-y="' + item.y + '"]');
+					
+					grid.update(item, { locked: true })
+			  		$('.widget-header', item).css('height', cellHeight + 'px');
+			  		var hasScroll = $('.grid-stack-item-content', item)[0].scrollWidth > $('.grid-stack-item-content', item)[0].clientWidth;
+    				$('.widget-header', item).css('display', hasScroll ? 'table' : 'block');
+			  	});
+			});
+
+			grid.on('resizestop', function(event, el) {
+				var item = $(el);
+		  		var hasScroll = $('.grid-stack-item-content', item)[0].scrollWidth > item.attr('gs-w') * cellWidth;
+				$('.widget-header', item).css('display', hasScroll ? 'table' : 'block');
+			});
+	
+	    	$('#load').change(function(e) {
+	    		var file = e.target.files[0];
+
+	    		var reader = new FileReader();
+	    		reader.readAsText(file, 'UTF-8');
+
+	    		reader.onload = function(readerEvent) {
+	    			var content = readerEvent.target.result;
+	    			clearGrid();
+
+	    			if (JSON.parse(content).length) {
+	    				grid.load(JSON.parse(content), true);
+	    			}
+	    		}
+
+	    		$('#load').val('');
+	    	});
+
+
+	    	$('.input_header_color').colorpicker();
+
+			$(document).on("dblclick", ".grid-stack-item" , function() {
+				var item = $(this);
+
+				$('.input_x').val(item.attr('gs-x'))
+				$('.input_y').val(item.attr('gs-y'))
+
+				$('.input_header').val($('.widget-header', item).text())
+
+				const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
+
+				$('.input_header_color').val(rgb2hex($('.widget-header', item).css('background-color')))
+				$('.input_data1').val($('span.widget-data1', item).text())
+				$('.input_data2').val($('span.widget-data2', item).text())
+				$('.input_data3').val($('span.widget-data3', item).text())
+
+	            $('#modal').modal('show');
+	        });
+
+	        $('#save_change').click(function(e) {
+	        	var x = $('.input_x').val(), y = $('.input_y').val()
+
+	        	var item = $('.grid-stack-item[gs-x="' + x + '"][gs-y="' + y + '"]');
+
+	        	$('.widget-header', item).text($('.input_header').val())
+	        	$('.widget-header', item).css('background-color', $('.input_header_color').val())
+	        	$('span.widget-data1', item).text($('.input_data1').val())
+	        	$('span.widget-data2', item).text($('.input_data2').val())
+	        	$('span.widget-data3', item).text($('.input_data3').val())
+	        	$('#modal').modal('hide');
+	        })
+
+	        $(window).resize(function() {
+	        	cellWidth = $('tr.hour th').outerWidth();
+		  		cellHeight = $('tbody tr:nth-child(1) td').outerHeight();
+
+				var position = $("tbody tr:nth-child(1) td").first().position();
+
+		  		$('.grid-stack').css('left', (position.left + 120) + 'px');
+				$('.grid-stack').css('top', position.top + 'px');
+				$('.grid-stack').css('width', (cellWidth * column) + 'px');
+				$('.grid-stack').css('height', (cellHeight * row) + 'px');
+
+				grid.cellHeight(cellHeight, true);
+
+		  	})
+		});
+	</script>
+</body>
+</html>
